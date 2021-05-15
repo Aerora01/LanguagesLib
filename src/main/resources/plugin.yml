@@ -1,0 +1,9 @@
+name: LanguagesLib
+version: ${project.version}
+main: it.nikotecnology.languageslib.LanguagesLib
+api-version: 1.15
+authors: [ Nikotecnology ]
+description: Multiple Languages Plugin
+website: nikotecnology.it
+depend:
+  - NikoLibs
