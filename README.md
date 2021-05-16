@@ -9,7 +9,8 @@ To use this library you have to download it from the Relases page, Make your plu
  public static LanguagesConfig langconfig = new LanguagesConfig(MyCoolPlugin.getInstance());
 
  public void setLangConfig() throws IOException {
-         langconfig.setPathLang("Lang");          //This is the config path you will use in your plugin to set the language
+         //This is the config path you will use in your plugin to set the language
+         langconfig.setPathLang("Lang");          
          /**
            * The PlaceHolder prefix and suffix.
            * In your language file/default you need to set the placeholder with that prefix and suffix like this:
@@ -17,14 +18,16 @@ To use this library you have to download it from the Relases page, Make your plu
            * "mycoolplaceholer" without the fixes
            *
          */
-         langconfig.setPlaceholderFix("%");       
-         langconfig.setDefaultLanguage("en");     //The default language of your plugin
+         langconfig.setPlaceholderFix("%");  
+         //The default language of your plugin
+         langconfig.setDefaultLanguage("en");
          langconfig.setDefaults(new Default[]{
                  //Call this class to set a default(first parameter: path, second parameter: message)
                  new Default("my-cool-message", "&6My Cool Message");
                  ...
                  //This defaults will be inserted in the default language file, in this case, the en lang
          });
-         LanguagesLib.generateDefaults(langconfig);   //Don't remove this, it generates the plugin default language!
+         //Don't remove this, it generates the plugin default language!
+         LanguagesLib.generateDefaults(langconfig);
      }
 ```
