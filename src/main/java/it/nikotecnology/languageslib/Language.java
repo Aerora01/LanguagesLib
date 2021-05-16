@@ -1,22 +1,23 @@
 package it.nikotecnology.languageslib;
 
+import com.nikotecnology.nikolibs.NikoLibs;
+import com.nikotecnology.nikolibs.utils.Logger;
 import it.nikotecnology.languageslib.objects.LanguagesConfig;
 import it.nikotecnology.languageslib.objects.Placeholder;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 public class Language {
 
-    private Plugin plugin;
+    private LanguagesConfig config;
     private YamlConfiguration conf;
 
-    public Language(Plugin plugin) {
-        this.plugin = plugin;
-        conf = LanguagesLib.getPluginLangFileConfiguration(plugin);
+    public Language(LanguagesConfig config) {
+        this.config = config;
+        conf = LanguagesLib.getPluginLangFileConfiguration(config);
     }
 
     /**
@@ -26,7 +27,18 @@ public class Language {
      * @return language text colored
      */
     public String getString(String path) {
-        if(plugin == null || path == null || conf == null) return null;
+        if(NikoLibs.isDebugging()) {
+            Logger.log(Logger.LogLevel.DEBUG, "String path: " + path);
+        }
+        if(path == null) return null;
+        if(conf == null) {
+            Logger.log(Logger.LogLevel.DEBUG, config.getPlugin().getName() + " Config is null, String path: " + path);
+            try {
+                conf = LanguagesLib.getPluginLangFileConfiguration(config);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         if(conf.getString(path) != null) {
             return LanguagesLib.color(conf.getString(path));
         }
@@ -40,7 +52,18 @@ public class Language {
      * @return Colored List String from Language
      */
     public List<String> getStringList(String path) {
-        if(plugin == null || path == null || conf == null) return null;
+        if(NikoLibs.isDebugging()) {
+            Logger.log(Logger.LogLevel.DEBUG, "String path: " + path);
+        }
+        if(path == null) return null;
+        if(conf == null) {
+            Logger.log(Logger.LogLevel.DEBUG, config.getPlugin().getName() + " Config is null, String path: " + path);
+            try {
+                conf = LanguagesLib.getPluginLangFileConfiguration(config);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         if(conf.getString(path) != null) {
             return LanguagesLib.colorList(conf.getStringList(path));
         }
@@ -56,9 +79,18 @@ public class Language {
      * @return The text with placeholders and colors applied
      */
     public String getReplaceTags(String path, Placeholder... placeholders) {
-        if(plugin == null || path == null || placeholders == null) return null;
-        YamlConfiguration conf = LanguagesLib.getPluginLangFileConfiguration(plugin);
-        LanguagesConfig config = new LanguagesConfig(plugin);
+        if(NikoLibs.isDebugging()) {
+            Logger.log(Logger.LogLevel.DEBUG, config.getPlugin().getName() + " getReplaceTags() with path: " + path + " with placeholders: " + Arrays.toString(placeholders));
+        }
+        if(path == null || placeholders == null) return null;
+        if(conf == null) {
+            Logger.log(Logger.LogLevel.DEBUG, config.getPlugin().getName() + " Config is null, String path: " + path);
+            try {
+                conf = LanguagesLib.getPluginLangFileConfiguration(config);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         String newString = conf.getString(path);
         if(newString != null) {
             for (Placeholder placeholder : placeholders) {
@@ -82,8 +114,17 @@ public class Language {
      * @return TextComponent
      */
     public TextComponent getTextComponent(String path, TextComponent component) {
-        if (plugin == null || path == null || component == null) return null;
-        YamlConfiguration conf = LanguagesLib.getPluginLangFileConfiguration(plugin);
+        if(NikoLibs.isDebugging() && path == null || component == null) {
+            Logger.log(Logger.LogLevel.DEBUG, config.getPlugin().getName() + " getTextComponent() with null component or null path");
+        }
+        if (path == null || component == null) return null;
+        if(conf == null) {
+            try {
+                conf = LanguagesLib.getPluginLangFileConfiguration(config);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         String text = conf.getString(path);
         if(component.getText() != null) return null;
 

@@ -2,6 +2,7 @@ package it.nikotecnology.languageslib.managers;
 
 import com.nikotecnology.nikolibs.NikoLibs;
 import it.nikotecnology.languageslib.LanguagesLib;
+import it.nikotecnology.languageslib.objects.LanguagesConfig;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
@@ -25,16 +26,16 @@ public class TranslationManager {
     public static List<String> langs = new ArrayList<>();
 
     //Translate the plugin from the current language
-    public static String translatePlugin(Plugin plugin, String language) throws Exception {
-        if(!plugin.getDescription().getDepend().contains("LanguagesLib")) {
+    public static String translatePlugin(LanguagesConfig confi, String language) throws Exception {
+        if(!confi.getPlugin().getDescription().getDepend().contains("LanguagesLib")) {
             return "§c(§4!§c) §4That plugin isn't using LanguagesLib!";
         }
-        File messages = LanguagesLib.getPluginLangFile(plugin);
+        File messages = LanguagesLib.getPluginLangFile(confi);
         YamlConfiguration config = YamlConfiguration.loadConfiguration(messages);
-        File newLang = new File(plugin.getDataFolder() + "//locales", language + ".yml");
+        File newLang = new File(confi.getPlugin().getDataFolder() + "//locales", language + ".yml");
         YamlConfiguration nlang = YamlConfiguration.loadConfiguration(newLang);
         for(String key : config.getConfigurationSection("").getKeys(false)) {
-            nlang.set(key, translate(plugin.getConfig().getString("Lang"), language, config.getString(key)));
+            nlang.set(key, translate(confi.getPlugin().getConfig().getString("Lang"), language, config.getString(key)));
         }
         nlang.save(newLang);
         return "§a(§2!§a) §2Plugin translated succesfully";

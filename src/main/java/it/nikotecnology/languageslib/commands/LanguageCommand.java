@@ -1,8 +1,10 @@
 package it.nikotecnology.languageslib.commands;
 
 import com.nikotecnology.nikolibs.builders.TextComponentBuilder;
+import it.nikotecnology.languageslib.Language;
 import it.nikotecnology.languageslib.LanguagesLib;
 import it.nikotecnology.languageslib.managers.TranslationManager;
+import it.nikotecnology.languageslib.objects.LanguagesConfig;
 import me.mattstudios.mf.annotations.Command;
 import me.mattstudios.mf.annotations.Completion;
 import me.mattstudios.mf.annotations.Permission;
@@ -49,6 +51,7 @@ public class LanguageCommand extends CommandBase {
             for (Plugin plugin : Bukkit.getServer().getPluginManager().getPlugins()) {
                 if (plugin.getDescription().getDepend().contains("LanguagesLib")) {
                     LanguagesLib.makeLanguageFile(plugin);
+
                 }
             }
 
@@ -56,39 +59,39 @@ public class LanguageCommand extends CommandBase {
         }
     }
 
-    @SubCommand("translate")
-    @Permission("languagelib.command.translate")
-    public void translateCommand(final CommandSender sender, @Completion("#plugins") String plugin, @Completion("#locales") String lang) throws Exception {
-        if(!(sender instanceof Player)) return;
-        Player p = (Player) sender;
-        sender.sendMessage("§4⚠️ ATTENTION!\n\n §7This library feature is in beta! Don't use this if you aren't sure what are you doing!\n The actual Translation API Limits the user to 10 translations, currently no other company has a free translation system, only for a fee, in the future we will try to create a proprietary system\n");
-        TextComponent confirm = new TextComponentBuilder()
-                .setText("[i'm sure what i'm doing]")
-                .setTextColor(ChatColor.DARK_RED)
-                .setHoverText("§7Click me to confirm")
-                .setCommand("languageslib translateconfirm " + plugin + " " + lang + " ")
-                .build();
-        sender.spigot().sendMessage(confirm);
-        transConfirm.add(p.getUniqueId());
-    }
-
-    @SubCommand("translateconfirm")
-    @Permission("languagelib.command.translate")
-    public void translateConfirmCommand(final CommandSender sender, @Completion("#plugins") String plugin, @Completion("#locales") String lang) throws Exception {
-        if(!(sender instanceof Player)) return;
-        Player p = (Player) sender;
-        if(!TranslationManager.langs.contains(lang))
-            sender.sendMessage("§4⚠️The language inserted does not exists!");
-        Plugin pl = Bukkit.getPluginManager().getPlugin(plugin);
-        if(pl != null) {
-            File langs = new File(pl.getDataFolder() + "//locales", pl.getConfig().getString("Lang"));
-            if(langs.exists()) {
-                sender.sendMessage("§c(§4!§c) §4This language already exists!");
-            }
-            sender.sendMessage("§a(§2!§a) §2Plugin translation started! It may take a few minutes, don't use the plugin before the translation finish!");
-            sender.sendMessage(TranslationManager.translatePlugin(pl, lang));
-        }
-        transConfirm.remove(p.getUniqueId());
-    }
+//    @SubCommand("translate")
+//    @Permission("languagelib.command.translate")
+//    public void translateCommand(final CommandSender sender, @Completion("#plugins") String plugin, @Completion("#locales") String lang) throws Exception {
+//        if(!(sender instanceof Player)) return;
+//        Player p = (Player) sender;
+//        sender.sendMessage("§4⚠️ ATTENTION!\n\n §7This library feature is in beta! Don't use this if you aren't sure what are you doing!\n The actual Translation API Limits the user to 10 translations, currently no other company has a free translation system, only for a fee, in the future we will try to create a proprietary system\n");
+//        TextComponent confirm = new TextComponentBuilder()
+//                .setText("[i'm sure what i'm doing]")
+//                .setTextColor(ChatColor.DARK_RED)
+//                .setHoverText("§7Click me to confirm")
+//                .setCommand("languageslib translateconfirm " + plugin + " " + lang + " ")
+//                .build();
+//        sender.spigot().sendMessage(confirm);
+//        transConfirm.add(p.getUniqueId());
+//    }
+//
+//    @SubCommand("translateconfirm")
+//    @Permission("languagelib.command.translate")
+//    public void translateConfirmCommand(final CommandSender sender, @Completion("#plugins") String plugin, @Completion("#locales") String lang) throws Exception {
+//        if(!(sender instanceof Player)) return;
+//        Player p = (Player) sender;
+//        if(!TranslationManager.langs.contains(lang))
+//            sender.sendMessage("§4⚠️The language inserted does not exists!");
+//        Plugin pl = Bukkit.getPluginManager().getPlugin(plugin);
+//        if(pl != null) {
+//            File langs = new File(pl.getDataFolder() + "//locales", pl.getConfig().getString("Lang"));
+//            if(langs.exists()) {
+//                sender.sendMessage("§c(§4!§c) §4This language already exists!");
+//            }
+//            sender.sendMessage("§a(§2!§a) §2Plugin translation started! It may take a few minutes, don't use the plugin before the translation finish!");
+//            sender.sendMessage(TranslationManager.translatePlugin( ,lang));
+//        }
+//        transConfirm.remove(p.getUniqueId());
+//    }
 
 }

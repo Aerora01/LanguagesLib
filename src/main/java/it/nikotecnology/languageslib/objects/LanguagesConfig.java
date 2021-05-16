@@ -13,6 +13,7 @@ import org.bukkit.plugin.Plugin;
 
 public class LanguagesConfig {
 
+    @Getter @Setter
     private Plugin plugin;
     /**
      * The PlaceHolder prefix and suffix. Example: config.setPlaceholderFix("%");

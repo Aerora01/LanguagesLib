@@ -1,5 +1,6 @@
 package it.nikotecnology.languageslib;
 
+import com.nikotecnology.nikolibs.managers.ConfigManager;
 import com.nikotecnology.nikolibs.utils.Logger;
 import it.nikotecnology.languageslib.commands.LanguageCommand;
 import it.nikotecnology.languageslib.managers.TranslationManager;
@@ -60,14 +61,6 @@ public final class LanguagesLib extends JavaPlugin {
         manager.getCompletionHandler().register("#plugins", input -> Arrays.stream(Bukkit.getPluginManager().getPlugins()).map(Plugin::getName).collect(Collectors.toList()));
         manager.getCompletionHandler().register("#locales", input -> TranslationManager.langs);
         manager.register(new LanguageCommand());
-        Logger.log(Logger.LogLevel.INFO, "Loading Languages");
-        for (Plugin plugin : Bukkit.getServer().getPluginManager().getPlugins()) {
-            if(plugin.getDescription().getDepend().contains("LanguagesLib")) {
-                makeLanguageFile(plugin);
-                plusing.add(plugin.getName());
-            }
-        }
-        Logger.log(Logger.LogLevel.INFO, "Plugin using this lib: " + formatList(plusing));
         Logger.log(Logger.LogLevel.SUCCESS, "Plugin loaded successfully");
     }
 
@@ -83,8 +76,26 @@ public final class LanguagesLib extends JavaPlugin {
                     "The language field in che config of the plugin " + plugin.getName() + " contains an non-existing language.\n Languages available: " + TranslationManager.formatList(TranslationManager.langs));
         YamlConfiguration messagesConfig;
 
-        if(getPluginLangFile(plugin).exists()) {
-            File messages = getPluginLangFile(plugin);
+        if(getPluginLangFile(config).exists()) {
+            File messages = getPluginLangFile(config);
+
+            messagesConfig  = YamlConfiguration.loadConfiguration(messages);
+            messagesConfig.save(messages);
+        } else {
+            File folder = new File(plugin.getDataFolder() + "//locales");
+            if(folder.mkdir()) {
+                File lang = getPluginLangFile(config);
+                if (lang.createNewFile()) {
+                     messagesConfig = YamlConfiguration.loadConfiguration(lang);
+                    messagesConfig.save(lang);
+                }
+            }
+        }
+    }
+
+    public static void generateDefaults(LanguagesConfig config) throws IOException {
+            File messages = getPluginLangFile(config);
+            YamlConfiguration messagesConfig;
 
             messagesConfig  = YamlConfiguration.loadConfiguration(messages);
             for (Default def : config.getDefaults()) {
@@ -95,35 +106,18 @@ public final class LanguagesLib extends JavaPlugin {
                 }
             }
             messagesConfig.save(messages);
-        } else {
-            File folder = new File(plugin.getDataFolder() + "//locales");
-            if(folder.mkdir()) {
-                File lang = getPluginLangFile(plugin);
-                if (lang.createNewFile()) {
-                     messagesConfig = YamlConfiguration.loadConfiguration(lang);
-                    for (Default def : config.getDefaults()) {
-                        if(def.getStringList() == null) {
-                            messagesConfig.set(def.getPath(), def.getMessage());
-                        } else {
-                            messagesConfig.set(def.getPath(), def.getStringList());
-                        }
-                    }
-                    messagesConfig.save(lang);
-                }
-            }
-        }
     }
 
-    public static File getPluginLangFile(Plugin plugin) {
-        if (plugin == null) return null;
-        LanguagesConfig config = new LanguagesConfig(plugin);
-        return new File(plugin.getDataFolder() + "//locales", plugin.getConfig().getString(config.getPathLang()) + ".yml");
+    public static File getPluginLangFile(LanguagesConfig config) {
+        if (config.getPlugin() == null) return null;
+        if (config.getPathLang() == null) return null;
+        return new File(config.getPlugin().getDataFolder() + "//locales", config.getPlugin().getConfig().getString(config.getPathLang()) + ".yml");
     }
 
-    public static YamlConfiguration getPluginLangFileConfiguration(Plugin plugin) {
-        if (plugin == null) return null;
+    public static YamlConfiguration getPluginLangFileConfiguration(LanguagesConfig config) {
+        if (config.getPlugin() == null) return null;
 
-        File lang = getPluginLangFile(plugin);
+        File lang = getPluginLangFile(config);
         YamlConfiguration conf = YamlConfiguration.loadConfiguration(lang);
         return conf;
     }
