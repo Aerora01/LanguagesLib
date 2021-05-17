@@ -4,9 +4,9 @@ import com.nikotecnology.nikolibs.NikoLibs;
 import com.nikotecnology.nikolibs.utils.Logger;
 import it.nikotecnology.languageslib.objects.LanguagesConfig;
 import it.nikotecnology.languageslib.objects.Placeholder;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 

@@ -1,0 +1,6 @@
+name: ExampleProject
+version: ${project.version}
+main: me.example.exampleproject.ExampleProject
+api-version: 1.15
+authors: [ Nikotecnology ]
+description: Example Project for testing Languages Lib
