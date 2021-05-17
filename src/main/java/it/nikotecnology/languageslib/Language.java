@@ -92,10 +92,18 @@ public class Language {
             }
         }
         String newString = conf.getString(path);
+        if(NikoLibs.isDebugging()) {
+            Logger.log(Logger.LogLevel.DEBUG, "String: " + newString);
+            Logger.log(Logger.LogLevel.DEBUG, "PlaceHolder Fix: " + config.getPlaceholderFix());
+        }
         if(newString != null) {
             for (Placeholder placeholder : placeholders) {
-                if(!newString.startsWith(config.getPlaceholderFix()) || !newString.endsWith(config.getPlaceholderFix())) return null;
                 String plHolder = config.getPlaceholderFix() + placeholder.getPlaceholder() + config.getPlaceholderFix();
+                if (!plHolder.startsWith(config.getPlaceholderFix()) || !plHolder.endsWith(config.getPlaceholderFix()))
+                    return null;
+                if (NikoLibs.isDebugging()) {
+                    Logger.log(Logger.LogLevel.DEBUG, "Complete pl holder: " + plHolder);
+                }
                 newString = newString.replace(plHolder, placeholder.getValue());
             }
             return LanguagesLib.color(newString);
