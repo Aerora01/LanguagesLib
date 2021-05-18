@@ -1,13 +1,10 @@
 package it.nikotecnology.languageslib;
 
-import com.nikotecnology.nikolibs.NikoLibs;
-import com.nikotecnology.nikolibs.utils.Logger;
 import it.nikotecnology.languageslib.objects.LanguagesConfig;
 import it.nikotecnology.languageslib.objects.Placeholder;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class Language {
@@ -27,12 +24,8 @@ public class Language {
      * @return language text colored
      */
     public String getString(String path) {
-        if(NikoLibs.isDebugging()) {
-            Logger.log(Logger.LogLevel.DEBUG, "String path: " + path);
-        }
         if(path == null) return null;
         if(conf == null) {
-            Logger.log(Logger.LogLevel.DEBUG, config.getPlugin().getName() + " Config is null, String path: " + path);
             try {
                 conf = LanguagesLib.getPluginLangFileConfiguration(config);
             } catch (Exception e) {
@@ -52,12 +45,8 @@ public class Language {
      * @return Colored List String from Language
      */
     public List<String> getStringList(String path) {
-        if(NikoLibs.isDebugging()) {
-            Logger.log(Logger.LogLevel.DEBUG, "String path: " + path);
-        }
         if(path == null) return null;
         if(conf == null) {
-            Logger.log(Logger.LogLevel.DEBUG, config.getPlugin().getName() + " Config is null, String path: " + path);
             try {
                 conf = LanguagesLib.getPluginLangFileConfiguration(config);
             } catch (Exception e) {
@@ -79,12 +68,8 @@ public class Language {
      * @return The text with placeholders and colors applied
      */
     public String getReplaceTags(String path, Placeholder... placeholders) {
-        if(NikoLibs.isDebugging()) {
-            Logger.log(Logger.LogLevel.DEBUG, config.getPlugin().getName() + " getReplaceTags() with path: " + path + " with placeholders: " + Arrays.toString(placeholders));
-        }
         if(path == null || placeholders == null) return null;
         if(conf == null) {
-            Logger.log(Logger.LogLevel.DEBUG, config.getPlugin().getName() + " Config is null, String path: " + path);
             try {
                 conf = LanguagesLib.getPluginLangFileConfiguration(config);
             } catch (Exception e) {
@@ -92,18 +77,12 @@ public class Language {
             }
         }
         String newString = conf.getString(path);
-        if(NikoLibs.isDebugging()) {
-            Logger.log(Logger.LogLevel.DEBUG, "String: " + newString);
-            Logger.log(Logger.LogLevel.DEBUG, "PlaceHolder Fix: " + config.getPlaceholderFix());
-        }
         if(newString != null) {
             for (Placeholder placeholder : placeholders) {
                 String plHolder = config.getPlaceholderFix() + placeholder.getPlaceholder() + config.getPlaceholderFix();
                 if (!plHolder.startsWith(config.getPlaceholderFix()) || !plHolder.endsWith(config.getPlaceholderFix()))
                     return null;
-                if (NikoLibs.isDebugging()) {
-                    Logger.log(Logger.LogLevel.DEBUG, "Complete pl holder: " + plHolder);
-                }
+
                 newString = newString.replace(plHolder, placeholder.getValue());
             }
             return LanguagesLib.color(newString);
@@ -122,9 +101,6 @@ public class Language {
      * @return TextComponent
      */
     public TextComponent getTextComponent(String path, TextComponent component) {
-        if(NikoLibs.isDebugging() && path == null || component == null) {
-            Logger.log(Logger.LogLevel.DEBUG, config.getPlugin().getName() + " getTextComponent() with null component or null path");
-        }
         if (path == null || component == null) return null;
         if(conf == null) {
             try {

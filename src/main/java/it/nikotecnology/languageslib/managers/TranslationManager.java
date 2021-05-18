@@ -1,14 +1,5 @@
 package it.nikotecnology.languageslib.managers;
 
-import com.nikotecnology.nikolibs.NikoLibs;
-import it.nikotecnology.languageslib.LanguagesLib;
-import it.nikotecnology.languageslib.objects.LanguagesConfig;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
-
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,64 +17,64 @@ public class TranslationManager {
     public static List<String> langs = new ArrayList<>();
 
     //Translate the plugin from the current language
-    public static String translatePlugin(LanguagesConfig confi, String language) throws Exception {
-        if(!confi.getPlugin().getDescription().getDepend().contains("LanguagesLib")) {
-            return "§c(§4!§c) §4That plugin isn't using LanguagesLib!";
-        }
-        File messages = LanguagesLib.getPluginLangFile(confi);
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(messages);
-        File newLang = new File(confi.getPlugin().getDataFolder() + "//locales", language + ".yml");
-        YamlConfiguration nlang = YamlConfiguration.loadConfiguration(newLang);
-        for(String key : config.getConfigurationSection("").getKeys(false)) {
-            nlang.set(key, translate(confi.getPlugin().getConfig().getString("Lang"), language, config.getString(key)));
-        }
-        nlang.save(newLang);
-        return "§a(§2!§a) §2Plugin translated succesfully";
-    }
+//    public static String translatePlugin(LanguagesConfig confi, String language) throws Exception {
+//        if(!confi.getPlugin().getDescription().getDepend().contains("LanguagesLib")) {
+//            return "§c(§4!§c) §4That plugin isn't using LanguagesLib!";
+//        }
+//        File messages = LanguagesLib.getPluginLangFile(confi);
+//        YamlConfiguration config = YamlConfiguration.loadConfiguration(messages);
+//        File newLang = new File(confi.getPlugin().getDataFolder() + "//locales", language + ".yml");
+//        YamlConfiguration nlang = YamlConfiguration.loadConfiguration(newLang);
+//        for(String key : config.getConfigurationSection("").getKeys(false)) {
+//            nlang.set(key, translate(confi.getPlugin().getConfig().getString("Lang"), language, config.getString(key)));
+//        }
+//        nlang.save(newLang);
+//        return "§a(§2!§a) §2Plugin translated succesfully";
+//    }
 
-    private static String translate(String fromLang, String toLang, String text) throws Exception {
-        String jsonPayload = new StringBuilder()
-                .append("{")
-                .append("\"fromLang\":\"")
-                .append(fromLang)
-                .append("\",")
-                .append("\"toLang\":\"")
-                .append(toLang)
-                .append("\",")
-                .append("\"text\":\"")
-                .append(text)
-                .append("\"")
-                .append("}")
-                .toString();
-
-        URL url = new URL(ENDPOINT);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setDoOutput(true);
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("X-WM-CLIENT-ID", CLIENT_ID);
-        conn.setRequestProperty("X-WM-CLIENT-SECRET", CLIENT_SECRET);
-        conn.setRequestProperty("Content-Type", "application/json");
-
-        OutputStream os = conn.getOutputStream();
-        os.write(jsonPayload.getBytes());
-        os.flush();
-        os.close();
-
-        int statusCode = conn.getResponseCode();
-        if(NikoLibs.isDebugging()) {
-            System.out.println("Status Code: " + statusCode);
-        }
-        if(statusCode == 400) return null;
-        BufferedReader br = new BufferedReader(new InputStreamReader(
-                (statusCode == 200) ? conn.getInputStream() : conn.getErrorStream()
-        ));
-        String output;
-        while ((output = br.readLine()) != null) {
-            return output;
-        }
-        conn.disconnect();
-        return null;
-    }
+//    private static String translate(String fromLang, String toLang, String text) throws Exception {
+//        String jsonPayload = new StringBuilder()
+//                .append("{")
+//                .append("\"fromLang\":\"")
+//                .append(fromLang)
+//                .append("\",")
+//                .append("\"toLang\":\"")
+//                .append(toLang)
+//                .append("\",")
+//                .append("\"text\":\"")
+//                .append(text)
+//                .append("\"")
+//                .append("}")
+//                .toString();
+//
+//        URL url = new URL(ENDPOINT);
+//        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//        conn.setDoOutput(true);
+//        conn.setRequestMethod("POST");
+//        conn.setRequestProperty("X-WM-CLIENT-ID", CLIENT_ID);
+//        conn.setRequestProperty("X-WM-CLIENT-SECRET", CLIENT_SECRET);
+//        conn.setRequestProperty("Content-Type", "application/json");
+//
+//        OutputStream os = conn.getOutputStream();
+//        os.write(jsonPayload.getBytes());
+//        os.flush();
+//        os.close();
+//
+//        int statusCode = conn.getResponseCode();
+//        if(NikoLibs.isDebugging()) {
+//            System.out.println("Status Code: " + statusCode);
+//        }
+//        if(statusCode == 400) return null;
+//        BufferedReader br = new BufferedReader(new InputStreamReader(
+//                (statusCode == 200) ? conn.getInputStream() : conn.getErrorStream()
+//        ));
+//        String output;
+//        while ((output = br.readLine()) != null) {
+//            return output;
+//        }
+//        conn.disconnect();
+//        return null;
+//    }
 
     public static void registerLangs() {
         langs.add("af");
