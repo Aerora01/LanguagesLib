@@ -28,7 +28,7 @@ To use this library you have to download it from the Relases page, Make your plu
                  //This defaults will be inserted in the default language file, in this case, the en lang
          });
          //Don't remove this, it generates the plugin default language!
-         LanguagesLib.generateDefaults(langconfig);
+         LanguagesLib.makeLanguageFile(getLangConfig());
      }
      
  public static LanguagesConfig getLangConfig() {
