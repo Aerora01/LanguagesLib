@@ -28,6 +28,15 @@ public class LanguagesLib {
     }
 
     public static boolean makeLanguageFile(LanguagesConfig config) throws IOException {
+        if(config.getPathLang() != null && config.getDefaultLanguage() != null) {
+           if (config.getPlugin().getConfig().getString(config.getPathLang()) == null) {
+               config.getPlugin().getConfig().set(config.getPathLang(), config.getDefaultLanguage());
+           }
+        }
+
+        if(TranslationManager.langs.isEmpty()) {
+            TranslationManager.registerLangs();
+        }
         if(configNull(config)) return false;
         if(config.getPlugin().getConfig().getString(config.getPathLang()) == null) {
             Logger.log(Logger.LogLevel.ERROR,
@@ -36,7 +45,7 @@ public class LanguagesLib {
         }
 
         String pathlang = config.getPlugin().getConfig().getString(config.getPathLang()).toLowerCase();
-        if(TranslationManager.langs.contains(pathlang)) {
+        if(!TranslationManager.langs.contains(pathlang)) {
             Logger.log(Logger.LogLevel.ERROR,
                     "The language field in che config of the plugin " + config.getPlugin().getName() + " contains an non-existing language.\n Languages available: " + TranslationManager.formatList(TranslationManager.langs));
             return false;
