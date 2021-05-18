@@ -25,7 +25,7 @@ public class Logger {
         }
     }
 
-    public static enum LogLevel {
+    public enum LogLevel {
         ERROR,
         WARNING,
         INFO,

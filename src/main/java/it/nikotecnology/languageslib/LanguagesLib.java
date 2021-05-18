@@ -36,7 +36,7 @@ public class LanguagesLib {
         }
 
         String pathlang = config.getPlugin().getConfig().getString(config.getPathLang()).toLowerCase();
-        if(!TranslationManager.langs.contains(pathlang)) {
+        if(TranslationManager.langs.contains(pathlang)) {
             Logger.log(Logger.LogLevel.ERROR,
                     "The language field in che config of the plugin " + config.getPlugin().getName() + " contains an non-existing language.\n Languages available: " + TranslationManager.formatList(TranslationManager.langs));
             return false;
