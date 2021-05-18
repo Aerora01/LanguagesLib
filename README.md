@@ -53,7 +53,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class ExampleCommand implements CommandExecutor {
-    private Language lang = new Language(ExampleProject.getLangConfig());
+    private Language lang = LanguagesLib.getLanguage(ChatAndCommandsLogger.getLangconfig());
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
