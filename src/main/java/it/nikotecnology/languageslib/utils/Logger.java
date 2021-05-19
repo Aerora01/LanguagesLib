@@ -5,7 +5,7 @@ import org.bukkit.ChatColor;
 
 public class Logger {
 
-    public static void log(LogLevel level, String message) {
+    public static void log(LogType level, String message) {
         if (message != null) {
             switch(level) {
                 case ERROR:
@@ -28,7 +28,7 @@ public class Logger {
         }
     }
 
-    public enum LogLevel {
+    public enum LogType {
         ERROR,
         WARNING,
         INFO,

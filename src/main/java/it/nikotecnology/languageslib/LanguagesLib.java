@@ -40,14 +40,14 @@ public class LanguagesLib {
         }
         if(configNull(config)) return false;
         if(config.getPlugin().getConfig().getString(config.getPathLang()) == null) {
-            Logger.log(Logger.LogLevel.ERROR,
+            Logger.log(Logger.LogType.ERROR,
                     "The language field in che config of the plugin: " + config.getPlugin().getName() + " does not exists! Check if you have implemented Language Interface in the Main class of your plugin!" );
             return false;
         }
 
         String pathlang = config.getPlugin().getConfig().getString(config.getPathLang()).toLowerCase();
         if(!Utils.langs.contains(pathlang)) {
-            Logger.log(Logger.LogLevel.ERROR,
+            Logger.log(Logger.LogType.ERROR,
                     "The language field in che config of the plugin " + config.getPlugin().getName() + " contains an non-existing language.\n Languages available: " + Utils.formatList(Utils.langs));
             return false;
         }
@@ -121,11 +121,11 @@ public class LanguagesLib {
 
     public static void reloadLang(LanguagesConfig config) {
         if(initLanguage(config)) {
-            Logger.log(Logger.LogLevel.SUCCESS, "Language reloaded succesfully!");
+            Logger.log(Logger.LogType.SUCCESS, "Language reloaded succesfully!");
             return;
         }
 
-        Logger.log(Logger.LogLevel.ERROR, "Language cannot be reloaded! Try again!");
+        Logger.log(Logger.LogType.ERROR, "Language cannot be reloaded! Try again!");
     }
 
     protected static List<String> colorList(List<String> stringList) {

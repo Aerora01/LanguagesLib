@@ -30,7 +30,7 @@ public class Language {
         if(conf.getString(path) != null) {
             return LanguagesLib.color(conf.getString(path));
         }
-        Logger.log(Logger.LogLevel.ERROR, "A player tried to receive a message, but in the path there isn't a message");
+        Logger.log(Logger.LogType.ERROR, "A player tried to receive a message, but in the path there isn't a message");
         return null;
     }
 
@@ -46,13 +46,13 @@ public class Language {
         if(conf.getString(path) != null) {
             return LanguagesLib.colorList(conf.getStringList(path));
         }
-        Logger.log(Logger.LogLevel.ERROR, "A player tried to receive a string list, but in the path there isn't a list");
+        Logger.log(Logger.LogType.ERROR, "A player tried to receive a string list, but in the path there isn't a list");
         return null;
     }
 
     private boolean isPathNull(String path) {
         if(path == null) {
-            Logger.log(Logger.LogLevel.ERROR, "A player tried to receive a message with null path");
+            Logger.log(Logger.LogType.ERROR, "A player tried to receive a message with null path");
             return true;
         }
         if(conf == null) {
@@ -76,8 +76,8 @@ public class Language {
     public String getReplaceTags(String path, Placeholder... placeholders) {
         if (isConfigNull()) return null;
         if(path == null || placeholders == null) {
-            Logger.log(Logger.LogLevel.ERROR, "A player tried to receive a message with null path or a null placeholder");
-            Logger.log(Logger.LogLevel.TIP, "If you want to send a message without placeholder/s use getString() method instead");
+            Logger.log(Logger.LogType.ERROR, "A player tried to receive a message with null path or a null placeholder");
+            Logger.log(Logger.LogType.TIP, "If you want to send a message without placeholder/s use getString() method instead");
             return null;
         }
         if(conf == null) {
@@ -92,7 +92,7 @@ public class Language {
             for (Placeholder placeholder : placeholders) {
                 String plHolder = config.getPlaceholderFix() + placeholder.getPlaceholder() + config.getPlaceholderFix();
                 if (!plHolder.startsWith(config.getPlaceholderFix()) || !plHolder.endsWith(config.getPlaceholderFix())) {
-                    Logger.log(Logger.LogLevel.ERROR, "The placeholder needs to start with the current placeholder fix: " + config.getPlaceholderFix());
+                    Logger.log(Logger.LogType.ERROR, "The placeholder needs to start with the current placeholder fix: " + config.getPlaceholderFix());
                     return null;
                 }
 
@@ -101,7 +101,7 @@ public class Language {
             }
             return LanguagesLib.color(newString);
         }
-        Logger.log(Logger.LogLevel.ERROR, "A player tried to receive a message with placeholders, but in the path there isn't a message");
+        Logger.log(Logger.LogType.ERROR, "A player tried to receive a message with placeholders, but in the path there isn't a message");
         return null;
     }
 
@@ -118,8 +118,8 @@ public class Language {
     public TextComponent getTextComponent(String path, TextComponent component) {
         if (isConfigNull()) return null;
         if (path == null || component == null) {
-            Logger.log(Logger.LogLevel.ERROR, "A player tried to receive a message with null path or a null TextComponent");
-            Logger.log(Logger.LogLevel.TIP, "If you want to send a message without TextComponent use getString() method instead");
+            Logger.log(Logger.LogType.ERROR, "A player tried to receive a message with null path or a null TextComponent");
+            Logger.log(Logger.LogType.TIP, "If you want to send a message without TextComponent use getString() method instead");
             return null;
         }
         if(conf == null) {
@@ -131,7 +131,7 @@ public class Language {
         }
         String text = conf.getString(path);
         if(component.getText() != null) {
-            Logger.log(Logger.LogLevel.ERROR, "You can't pass to getTextComponent() a TextComponent with text, remove it!");
+            Logger.log(Logger.LogType.ERROR, "You can't pass to getTextComponent() a TextComponent with text, remove it!");
             return null;
         }
 
@@ -139,24 +139,24 @@ public class Language {
             component.setText(text);
             return component;
         }
-        Logger.log(Logger.LogLevel.ERROR, "A player tried to receive a message with a TextComponent, but in the path there isn't a message");
+        Logger.log(Logger.LogType.ERROR, "A player tried to receive a message with a TextComponent, but in the path there isn't a message");
         return null;
     }
 
     private boolean isConfigNull() {
         if(LanguagesLib.configNull(config)) {
-            Logger.log(Logger.LogLevel.ERROR, "Something on the LanguagesConfig is null! Compile all the following methods referring to the readme: ");
+            Logger.log(Logger.LogType.ERROR, "Something on the LanguagesConfig is null! Compile all the following methods referring to the readme: ");
             if(config.getPlaceholderFix() == null) {
-                Logger.log(Logger.LogLevel.ERROR, "PlaceholderFix");
+                Logger.log(Logger.LogType.ERROR, "PlaceholderFix");
             }
             if(config.getPlugin() == null) {
-                Logger.log(Logger.LogLevel.ERROR, "Plugin");
+                Logger.log(Logger.LogType.ERROR, "Plugin");
             }
             if(config.getPathLang() == null) {
-                Logger.log(Logger.LogLevel.ERROR, "PathLang");
+                Logger.log(Logger.LogType.ERROR, "PathLang");
             }
             if(config.getDefaultLanguage() == null) {
-                Logger.log(Logger.LogLevel.ERROR, "DefaultLanguage");
+                Logger.log(Logger.LogType.ERROR, "DefaultLanguage");
             }
             return true;
         }
