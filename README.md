@@ -6,34 +6,42 @@ To use this library you have to download it from the Relases page, Make your plu
 
 ```JAVA
 
- public static LanguagesConfig langconfig = new LanguagesConfig(MyCoolPlugin.getInstance());
+public class MainClass() extends JavaPlugin {
+    
+    public static LanguagesConfig langconfig = new LanguagesConfig(MyCoolPlugin.getInstance());
+    public static Language lang = new Language(langconfig);
 
- public void setLangConfig() throws IOException {
-         //This is the config path you will use in your plugin to set the language
-         langconfig.setPathLang("Lang");          
-         /**
-           * The PlaceHolder prefix and suffix.
-           * In your language file/default you need to set the placeholder with that prefix and suffix like this:
-           * "%mycoolplaceholder%" and when you call the getReplaceTags you need to set only the prefix in this case
-           * "mycoolplaceholer" without the fixes
-           *
+    public void setLangConfig() {
+        //This is the config path you will use in your plugin to set the language
+        langconfig.setPathLang("Lang");
+        /**
+         * The PlaceHolder prefix and suffix.
+         * In your language file/default you need to set the placeholder with that prefix and suffix like this:
+         * "%mycoolplaceholder%" and when you call the getReplaceTags you need to set only the prefix in this case
+         * "mycoolplaceholer" without the fixes
+         *
          */
-         langconfig.setPlaceholderFix("%");  
-         //The default language of your plugin
-         langconfig.setDefaultLanguage("en");
-         langconfig.setDefaults(new Default[]{
-                 //Call this class to set a default(first parameter: path, second parameter: message)
-                 new Default("my-cool-message", "&6My Cool Message");
-                 ...
-                 //This defaults will be inserted in the default language file, in this case, the en lang
+        langconfig.setPlaceholderFix("%");
+        //The default language of your plugin
+        langconfig.setDefaultLanguage("en");
+        langconfig.setDefaults(new Default[]{
+                //Call this class to set a default(first parameter: path, second parameter: message)
+                new Default("my-cool-message", "&6My Cool Message");
+                //...
+                //This defaults will be inserted in the default language file, in this case, the en lang
          });
-         //Don't remove this, it generates the plugin default language!
-         LanguagesLib.generateDefaults(langconfig);
-     }
-     
- public static LanguagesConfig getLangConfig() {
-    return config;
- }
+        //Don't remove this, it generates the plugin default language!
+        LanguagesLib.initLanguage(getLangConfig());
+    }
+
+    public static LanguagesConfig getLangConfig() {
+        return config;
+    }
+
+    public static getLanguage() {
+        return lang;
+    }
+}
 ```
 
 Than you need to implement the Language class in every file you'll need to use the language like this class in the example project:
@@ -53,7 +61,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class ExampleCommand implements CommandExecutor {
-    private Language lang = LanguagesLib.getLanguage(ChatAndCommandsLogger.getLangconfig());
+    private Language lang = MainClass.getLanguage()
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
