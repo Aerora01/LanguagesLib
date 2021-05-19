@@ -109,7 +109,7 @@ public class Language {
     /**
      * Get string from plugin language selected and turn it to a TextComponent,
      * You can use NikosLib(Implemented in LanguagesLib Plugin) TextComponentBuilder.
-     * Make sure the string is null otherwise this method don't work
+     * Make sure the TextComponent text is null otherwise this method don't work
      *
      * @param path The language path
      * @param component The TextComponent
