@@ -2,6 +2,7 @@ package it.nikotecnology.languageslib;
 
 import it.nikotecnology.languageslib.objects.LanguagesConfig;
 import it.nikotecnology.languageslib.objects.Placeholder;
+import it.nikotecnology.languageslib.utils.Logger;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -14,7 +15,7 @@ public class Language {
 
     public Language(LanguagesConfig config) {
         this.config = config;
-        conf = LanguagesLib.getPluginLangFileConfiguration(config);
+        conf = LanguagesLib.getPluginLangFileConfiguration(this.config);
     }
 
     /**
@@ -24,17 +25,12 @@ public class Language {
      * @return language text colored
      */
     public String getString(String path) {
-        if(path == null) return null;
-        if(conf == null) {
-            try {
-                conf = LanguagesLib.getPluginLangFileConfiguration(config);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        if (isConfigNull()) return null;
+        if (isPathNull(path)) return null;
         if(conf.getString(path) != null) {
             return LanguagesLib.color(conf.getString(path));
         }
+        Logger.log(Logger.LogLevel.ERROR, "A player tried to receive a message, but in the path there isn't a message");
         return null;
     }
 
@@ -45,7 +41,20 @@ public class Language {
      * @return Colored List String from Language
      */
     public List<String> getStringList(String path) {
-        if(path == null) return null;
+        if (isConfigNull()) return null;
+        if (isPathNull(path)) return null;
+        if(conf.getString(path) != null) {
+            return LanguagesLib.colorList(conf.getStringList(path));
+        }
+        Logger.log(Logger.LogLevel.ERROR, "A player tried to receive a string list, but in the path there isn't a list");
+        return null;
+    }
+
+    private boolean isPathNull(String path) {
+        if(path == null) {
+            Logger.log(Logger.LogLevel.ERROR, "A player tried to receive a message with null path");
+            return true;
+        }
         if(conf == null) {
             try {
                 conf = LanguagesLib.getPluginLangFileConfiguration(config);
@@ -53,10 +62,7 @@ public class Language {
                 e.printStackTrace();
             }
         }
-        if(conf.getString(path) != null) {
-            return LanguagesLib.colorList(conf.getStringList(path));
-        }
-        return null;
+        return false;
     }
 
     /**
@@ -68,7 +74,12 @@ public class Language {
      * @return The text with placeholders and colors applied
      */
     public String getReplaceTags(String path, Placeholder... placeholders) {
-        if(path == null || placeholders == null) return null;
+        if (isConfigNull()) return null;
+        if(path == null || placeholders == null) {
+            Logger.log(Logger.LogLevel.ERROR, "A player tried to receive a message with null path or a null placeholder");
+            Logger.log(Logger.LogLevel.TIP, "If you want to send a message without placeholder/s use getString() method instead");
+            return null;
+        }
         if(conf == null) {
             try {
                 conf = LanguagesLib.getPluginLangFileConfiguration(config);
@@ -80,13 +91,17 @@ public class Language {
         if(newString != null) {
             for (Placeholder placeholder : placeholders) {
                 String plHolder = config.getPlaceholderFix() + placeholder.getPlaceholder() + config.getPlaceholderFix();
-                if (!plHolder.startsWith(config.getPlaceholderFix()) || !plHolder.endsWith(config.getPlaceholderFix()))
+                if (!plHolder.startsWith(config.getPlaceholderFix()) || !plHolder.endsWith(config.getPlaceholderFix())) {
+                    Logger.log(Logger.LogLevel.ERROR, "The placeholder needs to start with the current placeholder fix: " + config.getPlaceholderFix());
                     return null;
+                }
+
 
                 newString = newString.replace(plHolder, placeholder.getValue());
             }
             return LanguagesLib.color(newString);
         }
+        Logger.log(Logger.LogLevel.ERROR, "A player tried to receive a message with placeholders, but in the path there isn't a message");
         return null;
     }
 
@@ -101,7 +116,12 @@ public class Language {
      * @return TextComponent
      */
     public TextComponent getTextComponent(String path, TextComponent component) {
-        if (path == null || component == null) return null;
+        if (isConfigNull()) return null;
+        if (path == null || component == null) {
+            Logger.log(Logger.LogLevel.ERROR, "A player tried to receive a message with null path or a null TextComponent");
+            Logger.log(Logger.LogLevel.TIP, "If you want to send a message without TextComponent use getString() method instead");
+            return null;
+        }
         if(conf == null) {
             try {
                 conf = LanguagesLib.getPluginLangFileConfiguration(config);
@@ -110,13 +130,36 @@ public class Language {
             }
         }
         String text = conf.getString(path);
-        if(component.getText() != null) return null;
+        if(component.getText() != null) {
+            Logger.log(Logger.LogLevel.ERROR, "You can't pass to getTextComponent() a TextComponent with text, remove it!");
+            return null;
+        }
 
         if(text != null) {
             component.setText(text);
             return component;
         }
-
+        Logger.log(Logger.LogLevel.ERROR, "A player tried to receive a message with a TextComponent, but in the path there isn't a message");
         return null;
+    }
+
+    private boolean isConfigNull() {
+        if(LanguagesLib.configNull(config)) {
+            Logger.log(Logger.LogLevel.ERROR, "Something on the LanguagesConfig is null! Compile all the following methods referring to the readme: ");
+            if(config.getPlaceholderFix() == null) {
+                Logger.log(Logger.LogLevel.ERROR, "PlaceholderFix");
+            }
+            if(config.getPlugin() == null) {
+                Logger.log(Logger.LogLevel.ERROR, "Plugin");
+            }
+            if(config.getPathLang() == null) {
+                Logger.log(Logger.LogLevel.ERROR, "PathLang");
+            }
+            if(config.getDefaultLanguage() == null) {
+                Logger.log(Logger.LogLevel.ERROR, "DefaultLanguage");
+            }
+            return true;
+        }
+        return false;
     }
 }

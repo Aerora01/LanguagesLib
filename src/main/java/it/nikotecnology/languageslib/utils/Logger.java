@@ -20,6 +20,9 @@ public class Logger {
                 case SUCCESS:
                     Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&a&lSUCCESS&r&8] &f" + message));
                     break;
+                case TIP:
+                    Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&e&lTIP&r&8] &f" + message));
+                    break;
             }
 
         }
@@ -30,5 +33,6 @@ public class Logger {
         WARNING,
         INFO,
         SUCCESS,
+        TIP
     }
 }

@@ -1,14 +1,14 @@
 package it.nikotecnology.languageslib;
 
-import it.nikotecnology.languageslib.managers.TranslationManager;
 import it.nikotecnology.languageslib.objects.Default;
 import it.nikotecnology.languageslib.objects.LanguagesConfig;
 import it.nikotecnology.languageslib.utils.Logger;
+import it.nikotecnology.languageslib.utils.Utils;
+import lombok.SneakyThrows;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,15 +27,16 @@ public class LanguagesLib {
         return new Language(config);
     }
 
-    public static boolean makeLanguageFile(LanguagesConfig config) throws IOException {
+    @SneakyThrows
+    public static boolean initLanguage(LanguagesConfig config) {
         if(config.getPathLang() != null && config.getDefaultLanguage() != null) {
            if (config.getPlugin().getConfig().getString(config.getPathLang()) == null) {
                config.getPlugin().getConfig().set(config.getPathLang(), config.getDefaultLanguage());
            }
         }
 
-        if(TranslationManager.langs.isEmpty()) {
-            TranslationManager.registerLangs();
+        if(Utils.langs.isEmpty()) {
+            Utils.registerLangs();
         }
         if(configNull(config)) return false;
         if(config.getPlugin().getConfig().getString(config.getPathLang()) == null) {
@@ -45,9 +46,9 @@ public class LanguagesLib {
         }
 
         String pathlang = config.getPlugin().getConfig().getString(config.getPathLang()).toLowerCase();
-        if(!TranslationManager.langs.contains(pathlang)) {
+        if(!Utils.langs.contains(pathlang)) {
             Logger.log(Logger.LogLevel.ERROR,
-                    "The language field in che config of the plugin " + config.getPlugin().getName() + " contains an non-existing language.\n Languages available: " + TranslationManager.formatList(TranslationManager.langs));
+                    "The language field in che config of the plugin " + config.getPlugin().getName() + " contains an non-existing language.\n Languages available: " + Utils.formatList(Utils.langs));
             return false;
         }
 
@@ -78,7 +79,8 @@ public class LanguagesLib {
         return false;
     }
 
-    private static boolean gendefaults(LanguagesConfig config, YamlConfiguration messagesConfig, File lang) throws IOException {
+    @SneakyThrows
+    private static boolean gendefaults(LanguagesConfig config, YamlConfiguration messagesConfig, File lang)  {
         for (Default def : config.getDefaults()) {
             if (def.getStringList() == null) {
                 messagesConfig.set(def.getPath(), def.getMessage());
@@ -105,21 +107,20 @@ public class LanguagesLib {
     }
 
 
-    public static String color(String text) {
+    protected static String color(String text) {
         return ChatColor.translateAlternateColorCodes('&', text);
     }
 
 
-    private static boolean configNull(LanguagesConfig config) {
+    protected static boolean configNull(LanguagesConfig config) {
         return config.getPlugin() == null
-                && config.getPlaceholderFix() == null
-                && config.getPathLang() == null
-                && config.getDefaultLanguage() == null
-                && config.getDefaults() == null;
+                || config.getPlaceholderFix() == null
+                || config.getPathLang() == null
+                || config.getDefaultLanguage() == null;
     }
 
-    public static void reloadLang(LanguagesConfig config) throws IOException {
-        if(makeLanguageFile(config)) {
+    public static void reloadLang(LanguagesConfig config) {
+        if(initLanguage(config)) {
             Logger.log(Logger.LogLevel.SUCCESS, "Language reloaded succesfully!");
             return;
         }
@@ -127,7 +128,7 @@ public class LanguagesLib {
         Logger.log(Logger.LogLevel.ERROR, "Language cannot be reloaded! Try again!");
     }
 
-    public static List<String> colorList(List<String> stringList) {
+    protected static List<String> colorList(List<String> stringList) {
          if(stringList == null) return null;
         List<String> colored = new ArrayList<>();
         for(String str: stringList) {
