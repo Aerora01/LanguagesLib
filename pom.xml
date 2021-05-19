@@ -73,11 +73,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>me.mattstudios.utils</groupId>
-            <artifactId>matt-framework</artifactId>
-            <version>1.4.6</version> <!-- replace version here -->
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.16</version>

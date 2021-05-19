@@ -1,29 +1,17 @@
 package it.nikotecnology.languageslib;
 
-import com.nikotecnology.nikolibs.managers.ConfigManager;
-import com.nikotecnology.nikolibs.utils.Logger;
-import it.nikotecnology.languageslib.commands.LanguageCommand;
-import it.nikotecnology.languageslib.managers.TranslationManager;
 import it.nikotecnology.languageslib.objects.Default;
 import it.nikotecnology.languageslib.objects.LanguagesConfig;
-import it.nikotecnology.languageslib.objects.Placeholder;
-import lombok.Getter;
-import lombok.Setter;
+import it.nikotecnology.languageslib.utils.Logger;
+import it.nikotecnology.languageslib.utils.Utils;
 import lombok.SneakyThrows;
-import me.mattstudios.mf.base.CommandManager;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 
 /**
@@ -33,88 +21,80 @@ import java.util.stream.Collectors;
  * @author Nikotecnology
  */
 
-public final class LanguagesLib extends JavaPlugin {
-
-    @Getter private static LanguagesLib instance;
-    @Getter @Setter
-    private static String language;
-    private List<String> plusing;
-
-    public static List<String> colorList(List<String> stringList) {
-        List<String> colored = new ArrayList<>();
-       for(String str: stringList) {
-           colored.add(color(str));
-       }
-       return colored;
-    }
-
+public class LanguagesLib {
 
     @SneakyThrows
-    @Override
-    public void onEnable() {
-        Logger.log(Logger.LogLevel.INFO, "Loading Plugin");
-        instance = this;
-        getConfig().options().copyDefaults(true);
-        saveConfig();
-        TranslationManager.registerLangs();
-        CommandManager manager = new CommandManager(this);
-        manager.getCompletionHandler().register("#plugins", input -> Arrays.stream(Bukkit.getPluginManager().getPlugins()).map(Plugin::getName).collect(Collectors.toList()));
-        manager.getCompletionHandler().register("#locales", input -> TranslationManager.langs);
-        manager.register(new LanguageCommand());
-        Logger.log(Logger.LogLevel.SUCCESS, "Plugin loaded successfully");
-    }
+    public static boolean initLanguage(LanguagesConfig config) {
+        if(config.getPathLang() != null && config.getDefaultLanguage() != null) {
+           if (config.getPlugin().getConfig().getString(config.getPathLang()) == null) {
+               config.getPlugin().getConfig().set(config.getPathLang(), config.getDefaultLanguage());
+           }
+        }
 
-     public static void makeLanguageFile(Plugin plugin) throws IOException {
-        LanguagesConfig config = new LanguagesConfig(plugin);
-        if(config.getPathLang() == null) return;
-        if(plugin.getConfig().getString(config.getPathLang()) == null) Logger.log(Logger.LogLevel.ERROR,
-                "The language field in che config of the plugin: " + plugin.getName() + " does not exists! Check if you have implemented Language Interface in the Main class of your plugin!" );
-         ;
-        String pathlang = plugin.getConfig().getString(config.getPathLang()).toLowerCase();
-        if(TranslationManager.langs.contains(pathlang))
-            Logger.log(Logger.LogLevel.ERROR,
-                    "The language field in che config of the plugin " + plugin.getName() + " contains an non-existing language.\n Languages available: " + TranslationManager.formatList(TranslationManager.langs));
+        if(Utils.langs.isEmpty()) {
+            Utils.registerLangs();
+        }
+        if(configNull(config)) return false;
+        if(config.getPlugin().getConfig().getString(config.getPathLang()) == null) {
+            Logger.log(Logger.LogType.ERROR,
+                    "The language field in che config of the plugin: " + config.getPlugin().getName() + " does not exists! Check if you have implemented Language Interface in the Main class of your plugin!" );
+            return false;
+        }
+
+        String pathlang = config.getPlugin().getConfig().getString(config.getPathLang()).toLowerCase();
+        if(!Utils.langs.contains(pathlang)) {
+            Logger.log(Logger.LogType.ERROR,
+                    "The language field in che config of the plugin " + config.getPlugin().getName() + " contains an non-existing language.\n Languages available: " + Utils.formatList(Utils.langs));
+            return false;
+        }
+
         YamlConfiguration messagesConfig;
 
-        if(getPluginLangFile(config).exists()) {
-            File messages = getPluginLangFile(config);
-
-            messagesConfig  = YamlConfiguration.loadConfiguration(messages);
-            messagesConfig.save(messages);
-        } else {
-            File folder = new File(plugin.getDataFolder() + "//locales");
-            if(folder.mkdir()) {
-                File lang = getPluginLangFile(config);
-                if (lang.createNewFile()) {
-                     messagesConfig = YamlConfiguration.loadConfiguration(lang);
-                    messagesConfig.save(lang);
+        if(!getPluginLangFile(config).exists()) {
+            File folder = new File(config.getPlugin().getDataFolder() + "//locales");
+            if(!folder.exists()) {
+                if (folder.mkdir()) {
+                    File lang = getPluginLangFile(config);
+                    if (!lang.exists()) {
+                        if (lang.createNewFile()) {
+                            messagesConfig = YamlConfiguration.loadConfiguration(lang);
+                            return gendefaults(config, messagesConfig, lang);
+                        }
+                    }
                 }
+            }
+        } else {
+            File lang = getPluginLangFile(config);
+            messagesConfig = YamlConfiguration.loadConfiguration(lang);
+            Map<String, Object> configValues = messagesConfig.getValues(false);
+            for (Map.Entry<String, Object> entry : configValues.entrySet()) {
+                messagesConfig.set(entry.getKey(), null);
+            }
+            return gendefaults(config, messagesConfig, lang);
+        }
+        return false;
+    }
+
+    @SneakyThrows
+    private static boolean gendefaults(LanguagesConfig config, YamlConfiguration messagesConfig, File lang)  {
+        for (Default def : config.getDefaults()) {
+            if (def.getStringList() == null) {
+                messagesConfig.set(def.getPath(), def.getMessage());
+            } else {
+                messagesConfig.set(def.getPath(), def.getStringList());
             }
         }
+        messagesConfig.save(lang);
+        return true;
     }
 
-    public static void generateDefaults(LanguagesConfig config) throws IOException {
-            File messages = getPluginLangFile(config);
-            YamlConfiguration messagesConfig;
-
-            messagesConfig  = YamlConfiguration.loadConfiguration(messages);
-            for (Default def : config.getDefaults()) {
-                if(def.getStringList() == null) {
-                    messagesConfig.set(def.getPath(), def.getMessage());
-                } else {
-                    messagesConfig.set(def.getPath(), def.getStringList());
-                }
-            }
-            messagesConfig.save(messages);
-    }
-
-    public static File getPluginLangFile(LanguagesConfig config) {
+    protected static File getPluginLangFile(LanguagesConfig config) {
         if (config.getPlugin() == null) return null;
         if (config.getPathLang() == null) return null;
         return new File(config.getPlugin().getDataFolder() + "//locales", config.getPlugin().getConfig().getString(config.getPathLang()) + ".yml");
     }
 
-    public static YamlConfiguration getPluginLangFileConfiguration(LanguagesConfig config) {
+    protected static YamlConfiguration getPluginLangFileConfiguration(LanguagesConfig config) {
         if (config.getPlugin() == null) return null;
 
         File lang = getPluginLangFile(config);
@@ -123,19 +103,33 @@ public final class LanguagesLib extends JavaPlugin {
     }
 
 
-    static String color(String text) {
+    protected static String color(String text) {
         return ChatColor.translateAlternateColorCodes('&', text);
     }
 
-    public static String formatList(final List<String> list) {
-        if (list.isEmpty()) {
-            return "No one";
-        }
-        return list.toString().replaceAll("\\[", "").replaceAll("]", "");
+
+    protected static boolean configNull(LanguagesConfig config) {
+        return config.getPlugin() == null
+                || config.getPlaceholderFix() == null
+                || config.getPathLang() == null
+                || config.getDefaultLanguage() == null;
     }
 
-    @Override
-    public void onDisable() {
-        Logger.log(Logger.LogLevel.INFO, "Disabling Plugin");
+    public static void reloadLang(LanguagesConfig config) {
+        if(initLanguage(config)) {
+            Logger.log(Logger.LogType.SUCCESS, "Language reloaded succesfully!");
+            return;
+        }
+
+        Logger.log(Logger.LogType.ERROR, "Language cannot be reloaded! Try again!");
+    }
+
+    protected static List<String> colorList(List<String> stringList) {
+         if(stringList == null) return null;
+        List<String> colored = new ArrayList<>();
+        for(String str: stringList) {
+            colored.add(color(str));
+        }
+        return colored;
     }
 }

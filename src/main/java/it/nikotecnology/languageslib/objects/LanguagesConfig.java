@@ -13,8 +13,13 @@ import org.bukkit.plugin.Plugin;
 
 public class LanguagesConfig {
 
+    public LanguagesConfig(Plugin plugin) {
+        this.plugin = plugin;
+    }
+
     @Getter @Setter
     private Plugin plugin;
+
     /**
      * The PlaceHolder prefix and suffix. Example: config.setPlaceholderFix("%");
      * In your language file/default you need to set the placeholder with that prefix and suffix like this:
@@ -39,9 +44,5 @@ public class LanguagesConfig {
      */
     @Getter @Setter
     private String pathLang;
-
-    public LanguagesConfig(Plugin plugin) {
-        this.plugin = plugin;
-    }
 
 }
