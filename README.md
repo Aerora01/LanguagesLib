@@ -27,8 +27,9 @@ public class MainClass() extends JavaPlugin {
         langconfig.setDefaults(new Default[]{
                 //Call this class to set a default(first parameter: path, second parameter: message)
                 new Default("my-cool-message", "&6My Cool Message");
-        //...
-        //This defaults will be inserted in the default language file, in this case, the en lang
+
+                //...
+                //This defaults will be inserted in the default language file, in this case, the en lang
          });
         //Don't remove this, it generates the plugin default language!
         LanguagesLib.initLanguage(getLangConfig());
