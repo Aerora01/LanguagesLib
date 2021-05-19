@@ -23,10 +23,6 @@ import java.util.Map;
 
 public class LanguagesLib {
 
-    public static Language getLanguage(LanguagesConfig config) {
-        return new Language(config);
-    }
-
     @SneakyThrows
     public static boolean initLanguage(LanguagesConfig config) {
         if(config.getPathLang() != null && config.getDefaultLanguage() != null) {
