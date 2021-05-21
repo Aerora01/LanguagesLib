@@ -114,6 +114,9 @@ lang.getReplaceTags("my-path", new Placeholder("player", player.getName()));
 
 You noticed that the placeholder "player" doesen't have any fixes, this because you'll need to set it in the config, like written up
 
+**getTextComponent(String path, TextComponent component):**
+> This method allows you to transform the language text into a
+>    TextComponent
 
 
 If you want to review some other functions of the library open the [**Example Project**](https://github.com/Nikotecnology/LanguagesLib/tree/master/Example%20Project)
