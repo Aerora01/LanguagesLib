@@ -47,6 +47,7 @@ public class Language {
             return LanguagesLib.colorList(conf.getStringList(path));
         }
         Logger.log(Logger.LogType.ERROR, "A player tried to receive a string list, but in the path there isn't a list");
+        Logger.log(Logger.LogType.TIP, "Try to check the config for missing messages");
         return null;
     }
 
@@ -102,6 +103,7 @@ public class Language {
             return LanguagesLib.color(newString);
         }
         Logger.log(Logger.LogType.ERROR, "A player tried to receive a message with placeholders, but in the path there isn't a message");
+        Logger.log(Logger.LogType.TIP, "Try to check the config for missing messages");
         return null;
     }
 
