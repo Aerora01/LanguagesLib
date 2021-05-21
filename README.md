@@ -103,7 +103,9 @@ The class Language has this various methods:
 
 **getReplaceTags(String path, Placeholder... placeholders)**<br>
 > This method allows you to replace placeholders in your config message,<br>
-> to add a placeholder you'll need to insert: <br>
+> to add a placeholder you'll need to insert the object called Placeholder
+> and insert in the first argument the placeholder without fixes and
+> in the second argument the replace for the placeholder: <br>
  ```JAVA
 
 lang.getReplaceTags("my-path", new Placeholder("player", player.getName()));
