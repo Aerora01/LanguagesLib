@@ -6,7 +6,7 @@ To use this library you have to download it from the Relases page, Make your plu
 
 ```JAVA
 
-public class MainClass() extends JavaPlugin {
+public class MainClass extends JavaPlugin {
 
     public static LanguagesConfig langconfig = new LanguagesConfig(MyCoolPlugin.getInstance());
     public static Language lang = new Language(langconfig);
