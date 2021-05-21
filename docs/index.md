@@ -1,37 +1,122 @@
-## Welcome to GitHub Pages
+# Languages Lib
 
-You can use the [editor on GitHub](https://github.com/Nikotecnology/LanguagesLib/edit/master/docs/index.md) to maintain and preview the content for your website in Markdown files.
+> Make language implementation more easier in your plugin!
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+To use this library you have to download it from the Relases page, Make your plugin depend it and insert this code in your plugin main:
 
-### Markdown
+```JAVA
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+public class MainClass() extends JavaPlugin {
 
-```markdown
-Syntax highlighted code block
+    public static LanguagesConfig langconfig = new LanguagesConfig(MyCoolPlugin.getInstance());
+    public static Language lang = new Language(langconfig);
 
-# Header 1
-## Header 2
-### Header 3
+    public void setLangConfig() {
+        //This is the config path you will use in your plugin to set the language
+        langconfig.setPathLang("Lang");
+        /**
+         * The PlaceHolder prefix and suffix.
+         * In your language file/default you need to set the placeholder with that prefix and suffix like this:
+         * "%mycoolplaceholder%" and when you call the getReplaceTags you need to set only the prefix in this case
+         * "mycoolplaceholer" without the fixes
+         *
+         */
+        langconfig.setPlaceholderFix("%");
+        //The default language of your plugin
+        langconfig.setDefaultLanguage("en");
+        langconfig.setDefaults(new Default[]{
+                //Call this class to set a default(first parameter: path, second parameter: message)
+                new Default("my-cool-message", "&6My Cool Message");
 
-- Bulleted
-- List
+                //...
+                //This defaults will be inserted in the default language file, in this case, the en lang
+         });
+        //Don't remove this, it generates the plugin default language!
+        LanguagesLib.initLanguage(getLangConfig());
+    }
 
-1. Numbered
-2. List
+    public static LanguagesConfig getLangConfig() {
+        return config;
+    }
 
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+    public static getLanguage() {
+        return lang;
+    }
+}
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+Than you need to implement the Language class in every file you'll need to use the language like this class in the example project:
 
-### Jekyll Themes
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Nikotecnology/LanguagesLib/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+```JAVA
+package me.example.exampleproject.commands;
 
-### Support or Contact
+import com.nikotecnology.nikolibs.builders.TextComponentBuilder;
+import it.nikotecnology.languageslib.Language;
+import it.nikotecnology.languageslib.objects.Placeholder;
+import me.example.exampleproject.ExampleProject;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+public class ExampleCommand implements CommandExecutor {
+    private Language lang = MainClass.getLanguage()
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if(!(sender instanceof Player)) {
+            sender.sendMessage(lang.getString("console-error"));
+            return true;
+        }
+        Player p = (Player) sender;
+
+        if(args.length < 1) {
+            p.sendMessage(lang.getString("cool-message"));
+        } else if(args.length > 2) {
+            p.spigot().sendMessage(lang.getTextComponent("cool-component", new TextComponentBuilder()
+                    .setHoverText(ChatColor.translateAlternateColorCodes('&', "&7You are a good person!"))
+                    .setCommandSuggestion("examplecommand " + p.getName())
+                    .build()
+            ));
+        } else {
+            p.sendMessage(lang.getReplaceTags("cool-message-player", new Placeholder("player", args[0])));
+        }
+        return false;
+    }
+}
+
+```
+
+
+The class Language has this various methods:
+
+
+**getString(String path):**<br>
+> This method allows you to get a message from config with colors
+
+
+**getStringList(String path)**<br>
+> This method allows you to get a string list from the config(returns a list)
+
+
+**getReplaceTags(String path, Placeholder... placeholders)**<br>
+> This method allows you to replace placeholders in your config message,<br>
+> to add a placeholder you'll need to insert the object called Placeholder
+> and insert in the first argument the placeholder without fixes and
+> in the second argument the replace for the placeholder: <br>
+ ```JAVA
+
+lang.getReplaceTags("my-path", new Placeholder("player", player.getName()));
+
+```
+
+You noticed that the placeholder "player" doesen't have any fixes, this because you'll need to set it in the config, like written up
+
+**getTextComponent(String path, TextComponent component):**
+> This method allows you to transform the language text into a
+>    TextComponent
+
+
+If you want to review some other functions of the library open the [**Example Project**](https://github.com/Nikotecnology/LanguagesLib/tree/master/Example%20Project)
